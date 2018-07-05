@@ -13,7 +13,6 @@ RUN set -x \
     && chown -R 82:82 /data/upload
 
 FROM php:7.0-fpm-alpine
-MAINTAINER Martin Campbell <martin@campbellsoftware.co.uk>
 # environment for osticket
 ENV HOME=/data
 # setup workdir

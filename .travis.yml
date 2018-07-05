@@ -1,0 +1,13 @@
+language: generic
+sudo: required
+services:
+  - docker
+env:
+  - IMAGE_NAME=devinsolutions/osticket IMAGE_TAGS="latest 1.10"
+script:
+  - docker build $(for tag in ${IMAGE_TAGS}; do echo "-t ${IMAGE_NAME}:${tag}"; done) .
+deploy:
+  provider: script
+  script: ./docker-push.sh
+  on:
+    branch: master

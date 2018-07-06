@@ -7,10 +7,12 @@ RUN set -x \
     && git clone -b v${OSTICKET_VERSION} --depth 1 https://github.com/osTicket/osTicket.git \
     && cd osTicket \
     && php manage.php deploy -sv /data/upload \
-    && mv /data/upload/setup /data/setup \
-    && chmod -R go= /data/setup \
     # www-data is uid:gid 82:82 in php:7.0-fpm-alpine
-    && chown -R 82:82 /data/upload
+    && chown -R 82:82 /data/upload \
+    # Hide setup
+    && mv /data/upload/setup /data/upload/setup_hidden \
+    && chown -R root:root /data/upload/setup_hidden \
+    && chmod -R go= /data/upload/setup_hidden
 
 FROM php:7.0-fpm-alpine
 # environment for osticket
@@ -18,7 +20,6 @@ ENV HOME=/data
 # setup workdir
 WORKDIR /data
 COPY --from=deployer /data/upload upload
-COPY --from=deployer /data/setup upload/setup_hidden
 RUN set -x && \
     # requirements and PHP extensions
     apk add --no-cache --update \

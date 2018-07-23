@@ -8,6 +8,7 @@ $_SERVER['HTTP_ACCEPT_LANGUAGE'] = getenv("LANGUAGE") ?: "en-us";
 $vars = array(
   'name'      => getenv("INSTALL_NAME")  ?: 'My Helpdesk',
   'email'     => getenv("INSTALL_EMAIL") ?: 'helpdesk@example.com',
+  'url'       => getenv("INSTALL_URL")   ?: 'http://localhost:8080/',
 
   'fname'       => getenv("ADMIN_FIRSTNAME") ?: 'Admin',
   'lname'       => getenv("ADMIN_LASTNAME")  ?: 'User',
@@ -55,6 +56,9 @@ function convertStrToBool($varName, $default) {
    }
    return $default;
 }
+
+// Override Helpdesk URL. Only applied during database installation.
+define("URL",$vars['url']);
 
 //Require files (must be done before any output to avoid session start warnings)
 chdir("/data/upload/setup_hidden");
@@ -105,7 +109,7 @@ define('OSTICKET_CONFIGFILE','/data/upload/include/ost-config.php');
 $installer = new Installer(OSTICKET_CONFIGFILE); //Installer instance.
 
 //Determine if using linked container
-$linked = (boolean)getenv("MYSQL_PORT");
+$linked = (boolean)getenv("MYSQL_ENV_MYSQL_PASSWORD");
 
 if (!$linked) {
   echo "Using external MySQL connection\n";

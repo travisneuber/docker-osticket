@@ -14,6 +14,13 @@ RUN set -x \
     && mv /data/upload/setup /data/upload/setup_hidden \
     && chown -R root:root /data/upload/setup_hidden \
     && chmod -R go= /data/upload/setup_hidden
+RUN set -ex; \
+    for lang in ar az bg ca cs da de el es_ES et fr hr hu it ja ko lt mk mn nl no fa pl pt_PT \
+        pt_BR sk sl sr_CS fi sv_SE ro ru vi th tr uk zh_CN zh_TW; do \
+        curl -so /data/upload/include/i18n/${lang}.phar \
+            https://s3.amazonaws.com/downloads.osticket.com/lang/${lang}.phar; \
+    done; \
+    mv /data/upload/include/i18n /data/upload/include/i18n.dist
 
 FROM php:7.0-fpm-alpine
 # environment for osticket
@@ -54,14 +61,6 @@ RUN set -x && \
     pecl install apcu && docker-php-ext-enable apcu && \
     apk del .build-deps && \
     rm -rf /var/cache/apk/* && \
-    # Download languages packs
-    wget -nv -O upload/include/i18n/fr.phar http://osticket.com/sites/default/files/download/lang/fr.phar && \
-    wget -nv -O upload/include/i18n/ar.phar http://osticket.com/sites/default/files/download/lang/ar.phar && \
-    wget -nv -O upload/include/i18n/pt_BR.phar http://osticket.com/sites/default/files/download/lang/pt_BR.phar && \
-    wget -nv -O upload/include/i18n/it.phar http://osticket.com/sites/default/files/download/lang/it.phar && \
-    wget -nv -O upload/include/i18n/es_ES.phar http://osticket.com/sites/default/files/download/lang/es_ES.phar && \
-    wget -nv -O upload/include/i18n/de.phar http://osticket.com/sites/default/files/download/lang/de.phar && \
-    mv upload/include/i18n upload/include/i18n.dist && \
     # Download LDAP plugin
     wget -nv -O upload/include/plugins/auth-ldap.phar http://osticket.com/sites/default/files/download/plugin/auth-ldap.phar && \
     # Create msmtp log

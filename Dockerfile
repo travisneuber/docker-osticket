@@ -3,7 +3,8 @@ FROM php:7.0-cli AS deployer
 ENV OSTICKET_VERSION=1.10.4
 RUN set -x \
     && apt-get update \
-    && apt-get install -y git-core \
+    && apt-get install -y git-core
+RUN set -x \
     && git clone -b v${OSTICKET_VERSION} --depth 1 https://github.com/osTicket/osTicket.git \
     && cd osTicket \
     && php manage.php deploy -sv /data/upload \

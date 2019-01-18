@@ -21,6 +21,14 @@ RUN set -ex; \
             https://s3.amazonaws.com/downloads.osticket.com/lang/${lang}.phar; \
     done; \
     mv /data/upload/include/i18n /data/upload/include/i18n.dist
+RUN set -ex; \
+    git clone --depth 1 https://github.com/devinsolutions/osTicket-plugins.git; \
+    cd osTicket-plugins; \
+    php make.php hydrate; \
+    for plugin in $(find * -maxdepth 0 -type d ! -path doc ! -path lib); do \
+        php -dphar.readonly=0 make.php build ${plugin}; \
+        mv ${plugin}.phar /data/upload/include/plugins; \
+    done
 
 FROM php:7.0-fpm-alpine
 # environment for osticket
@@ -61,8 +69,6 @@ RUN set -x && \
     pecl install apcu && docker-php-ext-enable apcu && \
     apk del .build-deps && \
     rm -rf /var/cache/apk/* && \
-    # Download LDAP plugin
-    wget -nv -O upload/include/plugins/auth-ldap.phar http://osticket.com/sites/default/files/download/plugin/auth-ldap.phar && \
     # Create msmtp log
     touch /var/log/msmtp.log && \
     chown www-data:www-data /var/log/msmtp.log && \

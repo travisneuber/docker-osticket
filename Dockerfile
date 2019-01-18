@@ -29,6 +29,10 @@ RUN set -ex; \
         php -dphar.readonly=0 make.php build ${plugin}; \
         mv ${plugin}.phar /data/upload/include/plugins; \
     done
+RUN set -ex; \
+    git clone --depth 1 https://github.com/devinsolutions/osTicket-slack-plugin.git; \
+    cd osTicket-slack-plugin; \
+    mv slack /data/upload/include/plugins
 
 FROM php:7.0-fpm-alpine
 # environment for osticket

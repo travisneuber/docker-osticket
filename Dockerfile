@@ -39,7 +39,6 @@ FROM php:7.0-fpm-alpine
 ENV HOME=/data
 # setup workdir
 WORKDIR /data
-COPY --from=deployer /data/upload upload
 RUN set -x && \
     # requirements and PHP extensions
     apk add --no-cache --update \
@@ -78,6 +77,7 @@ RUN set -x && \
     chown www-data:www-data /var/log/msmtp.log && \
     # File upload permissions
     chown nginx:www-data /var/tmp/nginx && chmod g+rx /var/tmp/nginx
+COPY --from=deployer /data/upload upload
 COPY files/ /
 VOLUME ["/data/upload/include/plugins","/data/upload/include/i18n","/var/log/nginx"]
 EXPOSE 80

@@ -151,26 +151,6 @@ Specifies how often (in minutes) that OSTicket cron script should be ran to chec
 minutes. Set to 0 to disable running of cron script. Note that this works in conjuction with the email check interval
 specified in the admin control panel, you need to specify both to the value you'd like!
 
-# Volumes
-
-This image currently supports three volumes. None of these need to used if you do not require them.
-
-`/data/upload/include/plugins`
-
-This is the location where any OSTicket plugins, like [the core plugins](https://github.com/osTicket/core-plugins),
-can be placed. Plugins are not included in this image and hence should be maintained in a separate linked Docker
-container or the host filesystem.
-
-`/data/upload/include/i18n`
-
-This is the location where language packs can be added. There are several languages included in this image.
-If you want to add / change them, you can use this volume.
-
-`/var/log/nginx`
-
-nginx will store it's access & error logs in this location. If you wish to expose these to automatic log
-collection tools then you should mount this volume.
-
 # Environmental Variables
 
 `INSTALL_SECRET`
@@ -194,11 +174,11 @@ Defaults to 'helpdesk@example.com'
 
 `INSTALL_URL`
 
-The full URL of the OST ticket installation that will be set in the DB during installation. 
-This should be set to match the public facing URL of your OSTicket site. 
+The full URL of the OST ticket installation that will be set in the DB during installation.
+This should be set to match the public facing URL of your OSTicket site.
 For example: `https://help.example.com/osticket`. Defaults to `http://localhost:8080/`.
 
-This has no effect if the database has already been installed. In this case, you should change the Helpdesk URL in 
+This has no effect if the database has already been installed. In this case, you should change the Helpdesk URL in
 *System Settings and Preferences* in the admin control panel.
 
 ## Database Installation Only

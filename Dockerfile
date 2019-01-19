@@ -19,8 +19,7 @@ RUN set -ex; \
         pt_BR sk sl sr_CS fi sv_SE ro ru vi th tr uk zh_CN zh_TW; do \
         curl -so /data/upload/include/i18n/${lang}.phar \
             https://s3.amazonaws.com/downloads.osticket.com/lang/${lang}.phar; \
-    done; \
-    mv /data/upload/include/i18n /data/upload/include/i18n.dist
+    done
 RUN set -ex; \
     git clone --depth 1 https://github.com/devinsolutions/osTicket-plugins.git; \
     cd osTicket-plugins; \
@@ -94,6 +93,5 @@ RUN set -x \
     && rm -rf /var/cache/apk/*
 COPY --from=deployer /data/upload upload
 COPY files/ /
-VOLUME ["/data/upload/include/plugins","/data/upload/include/i18n","/var/log/nginx"]
 EXPOSE 80
 CMD ["/data/bin/start.sh"]

@@ -7,17 +7,17 @@ RUN set -x \
 RUN set -x \
     && git clone -b v${OSTICKET_VERSION} --depth 1 https://github.com/osTicket/osTicket.git \
     && cd osTicket \
-    && php manage.php deploy -sv /data/upload \
+    && php manage.php deploy -sv /install/data/upload \
     # www-data is uid:gid 82:82 in php:7.0-fpm-alpine
-    && chown -R 82:82 /data/upload \
+    && chown -R 82:82 /install/data/upload \
     # Hide setup
-    && mv /data/upload/setup /data/upload/setup_hidden \
-    && chown -R root:root /data/upload/setup_hidden \
-    && chmod -R go= /data/upload/setup_hidden
+    && mv /install/data/upload/setup /install/data/upload/setup_hidden \
+    && chown -R root:root /install/data/upload/setup_hidden \
+    && chmod -R go= /install/data/upload/setup_hidden
 RUN set -ex; \
     for lang in ar az bg ca cs da de el es_ES et fr hr hu it ja ko lt mk mn nl no fa pl pt_PT \
         pt_BR sk sl sr_CS fi sv_SE ro ru vi th tr uk zh_CN zh_TW; do \
-        curl -so /data/upload/include/i18n/${lang}.phar \
+        curl -so /install/data/upload/include/i18n/${lang}.phar \
             https://s3.amazonaws.com/downloads.osticket.com/lang/${lang}.phar; \
     done
 RUN set -ex; \
@@ -26,12 +26,13 @@ RUN set -ex; \
     php make.php hydrate; \
     for plugin in $(find * -maxdepth 0 -type d ! -path doc ! -path lib); do \
         php -dphar.readonly=0 make.php build ${plugin}; \
-        mv ${plugin}.phar /data/upload/include/plugins; \
+        mv ${plugin}.phar /install/data/upload/include/plugins; \
     done
 RUN set -ex; \
     git clone --depth 1 https://github.com/devinsolutions/osTicket-slack-plugin.git; \
     cd osTicket-slack-plugin; \
-    mv slack /data/upload/include/plugins
+    mv slack /install/data/upload/include/plugins
+COPY files /install
 
 FROM php:7.0-fpm-alpine
 # environment for osticket
@@ -90,7 +91,6 @@ RUN set -x \
     # Clean up
     && apk del .build-deps \
     && rm -rf /var/cache/apk/*
-COPY --from=deployer /data/upload upload
-COPY files/ /
+COPY --from=deployer /install /
 EXPOSE 80
 CMD ["/data/bin/start.sh"]

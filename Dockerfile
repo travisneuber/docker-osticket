@@ -8,11 +8,8 @@ RUN set -x \
     && git clone -b v${OSTICKET_VERSION} --depth 1 https://github.com/osTicket/osTicket.git \
     && cd osTicket \
     && php manage.php deploy -sv /install/data/upload \
-    # www-data is uid:gid 82:82 in php:7.0-fpm-alpine
-    && chown -R 82:82 /install/data/upload \
     # Hide setup
     && mv /install/data/upload/setup /install/data/upload/setup_hidden \
-    && chown -R root:root /install/data/upload/setup_hidden \
     && chmod -R go= /install/data/upload/setup_hidden
 RUN set -ex; \
     for lang in ar az bg ca cs da de el es_ES et fr hr hu it ja ko lt mk mn nl no fa pl pt_PT \

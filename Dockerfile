@@ -52,7 +52,6 @@ RUN set -x \
         openldap \
         openssl \
         supervisor \
-        wget \
     # Build dependencies
     && apk add --no-cache --virtual .build-deps \
         autoconf \

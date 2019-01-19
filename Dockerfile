@@ -39,44 +39,59 @@ FROM php:7.0-fpm-alpine
 ENV HOME=/data
 # setup workdir
 WORKDIR /data
-RUN set -x && \
-    # requirements and PHP extensions
-    apk add --no-cache --update \
-        wget \
-        msmtp \
+RUN set -x \
+    # Runtime dependencies
+    && apk add --no-cache --update \
         ca-certificates \
-        supervisor \
-        nginx \
-        libpng \
         c-client \
-        openldap \
-        libintl \
-        libxml2 \
         icu \
-        openssl && \
-    apk add --no-cache --virtual .build-deps \
+        libintl \
+        libpng \
+        libxml2 \
+        msmtp \
+        nginx \
+        openldap \
+        openssl \
+        supervisor \
+        wget \
+    # Build dependencies
+    && apk add --no-cache --virtual .build-deps \
+        autoconf \
+        curl-dev \
+        g++ \
+        gettext-dev \
+        icu-dev \
         imap-dev \
         libpng-dev \
-        curl-dev \
-        openldap-dev \
-        gettext-dev \
         libxml2-dev \
-        icu-dev \
-        autoconf \
-        g++ \
         make \
-        pcre-dev && \
-    docker-php-ext-install gd curl ldap mysqli sockets gettext mbstring xml intl opcache && \
-    docker-php-ext-configure imap --with-imap-ssl && \
-    docker-php-ext-install imap && \
-    pecl install apcu && docker-php-ext-enable apcu && \
-    apk del .build-deps && \
-    rm -rf /var/cache/apk/* && \
+        openldap-dev \
+        pcre-dev \
+    # Install PHP extensions
+    && docker-php-ext-install \
+        curl \
+        gd \
+        gettext \
+        intl \
+        ldap \
+        mbstring \
+        mysqli \
+        opcache \
+        sockets \
+        xml \
+    && docker-php-ext-configure imap --with-imap-ssl \
+    && docker-php-ext-install imap \
+    && pecl install apcu \
+    && docker-php-ext-enable apcu \
     # Create msmtp log
-    touch /var/log/msmtp.log && \
-    chown www-data:www-data /var/log/msmtp.log && \
+    && touch /var/log/msmtp.log \
+    && chown www-data:www-data /var/log/msmtp.log \
     # File upload permissions
-    chown nginx:www-data /var/tmp/nginx && chmod g+rx /var/tmp/nginx
+    && chown nginx:www-data /var/tmp/nginx \
+    && chmod g+rx /var/tmp/nginx \
+    # Clean up
+    && apk del .build-deps \
+    && rm -rf /var/cache/apk/*
 COPY --from=deployer /data/upload upload
 COPY files/ /
 VOLUME ["/data/upload/include/plugins","/data/upload/include/i18n","/var/log/nginx"]

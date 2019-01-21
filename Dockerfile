@@ -33,6 +33,7 @@ RUN set -x \
     && apk add --no-cache --update \
         ca-certificates \
         c-client \
+        curl \
         icu \
         libintl \
         libpng \
@@ -83,3 +84,4 @@ RUN set -x \
 COPY --from=deployer /install /
 EXPOSE 80
 CMD ["/data/bin/start.sh"]
+HEALTHCHECK CMD curl -fIsS http://localhost/ || exit 1

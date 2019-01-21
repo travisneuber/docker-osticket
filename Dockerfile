@@ -8,6 +8,8 @@ RUN set -x \
     && git clone -b v${OSTICKET_VERSION} --depth 1 https://github.com/osTicket/osTicket.git \
     && cd osTicket \
     && php manage.php deploy -sv /install/data/upload \
+    # Fix permissions for www-data
+    && chmod 755 /install/data/upload \
     # Hide setup
     && mv /install/data/upload/setup /install/data/upload/setup_hidden \
     && chmod -R go= /install/data/upload/setup_hidden

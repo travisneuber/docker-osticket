@@ -20,6 +20,14 @@ RUN set -ex; \
             https://s3.amazonaws.com/downloads.osticket.com/lang/${lang}.phar; \
     done
 RUN set -ex; \
+    git clone --depth 1 https://github.com/devinsolutions/osTicket-plugins.git; \
+    cd osTicket-plugins; \
+    php make.php hydrate; \
+    for plugin in $(find * -maxdepth 0 -type d ! -path doc ! -path lib); do \
+        php -dphar.readonly=0 make.php build ${plugin}; \
+        mv ${plugin}.phar /install/data/upload/include/plugins; \
+    done
+RUN set -ex; \
     git clone --depth 1 https://github.com/devinsolutions/osTicket-slack-plugin.git; \
     cd osTicket-slack-plugin; \
     mv slack /install/data/upload/include/plugins

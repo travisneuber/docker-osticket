@@ -4,9 +4,13 @@ ENV OSTICKET_VERSION=1.10.4
 RUN set -x \
     && apt-get update \
     && apt-get install -y --no-install-recommends git-core unzip
+COPY mod-allow-agents-unassign-themselves-from-ticket.patch .
 RUN set -x \
     && git clone -b v${OSTICKET_VERSION} --depth 1 https://github.com/osTicket/osTicket.git \
     && cd osTicket \
+    # Patches
+    && patch -p1 < ../mod-allow-agents-unassign-themselves-from-ticket.patch \
+    # Deploy
     && php manage.php deploy -sv /install/data/upload \
     # Fix permissions for www-data
     && chmod 755 /install/data/upload \

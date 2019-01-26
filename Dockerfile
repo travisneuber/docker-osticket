@@ -38,10 +38,6 @@ RUN set -ex; \
 COPY files /install
 
 FROM php:7.0-fpm-alpine
-# environment for osticket
-ENV HOME=/data
-# setup workdir
-WORKDIR /data
 RUN set -x \
     # Runtime dependencies
     && apk add --no-cache --update \
@@ -96,6 +92,7 @@ RUN set -x \
     && apk del .build-deps \
     && rm -rf /var/cache/apk/*
 COPY --from=deployer /install /
-EXPOSE 80
+WORKDIR /data
 CMD ["/data/bin/start.sh"]
+EXPOSE 80
 HEALTHCHECK CMD curl -fIsS http://localhost/ || exit 1

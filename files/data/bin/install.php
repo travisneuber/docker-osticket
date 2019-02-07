@@ -61,8 +61,8 @@ function convertStrToBool($varName, $default) {
 define("URL",$vars['url']);
 
 //Require files (must be done before any output to avoid session start warnings)
-chdir("/data/upload/setup_hidden");
-require "/data/upload/setup_hidden/setup.inc.php";
+chdir("/usr/local/src/osticket/setup");
+require "/usr/local/src/osticket/setup/setup.inc.php";
 require_once INC_DIR.'class.installer.php';
 
 

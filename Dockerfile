@@ -1,16 +1,13 @@
 # Deployment doesn't work on Alpine
-FROM php:7.0-cli AS deployer
-ENV OSTICKET_VERSION=1.10.5
+FROM php:7.2-cli AS deployer
+ENV OSTICKET_VERSION=1.11
 RUN set -x \
     && apt-get update \
     && apt-get install -y --no-install-recommends git-core unzip \
     && rm -rf /var/lib/apt/lists/*
-COPY mod-allow-agents-unassign-themselves-from-ticket.patch .
 RUN set -x \
     && git clone -b v${OSTICKET_VERSION} --depth 1 https://github.com/osTicket/osTicket.git \
     && cd osTicket \
-    # Patches
-    && patch -p1 < ../mod-allow-agents-unassign-themselves-from-ticket.patch \
     # Deploy
     && php manage.php deploy -sv /install/data/upload \
     # Fix permissions for www-data
@@ -45,7 +42,7 @@ RUN set -ex; \
     rm -rf osTicket-slack-plugin
 COPY files /install
 
-FROM php:7.0-fpm-alpine
+FROM php:7.2-fpm-alpine3.9
 RUN set -x \
     # Runtime dependencies
     && apk add --no-cache --update \
@@ -59,7 +56,6 @@ RUN set -x \
         msmtp \
         nginx \
         openldap \
-        openssl \
         supervisor \
     # Build dependencies
     && apk add --no-cache --virtual .build-deps \

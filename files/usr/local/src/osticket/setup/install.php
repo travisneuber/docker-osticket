@@ -70,7 +70,7 @@ require_once INC_DIR.'class.installer.php';
 define('MAIL_CONFIG_FILE','/etc/msmtp');
 
 echo "Configuring mail settings\n";
-if (!$mailConfig = file_get_contents('/data/msmtp.conf')) {
+if (!$mailConfig = file_get_contents('/etc/default/msmtp')) {
   err("Failed to load mail configuration file");
 };
 $mailConfig = str_replace('%SMTP_HOSTNAME%', $vars['smtp_host'], $mailConfig);

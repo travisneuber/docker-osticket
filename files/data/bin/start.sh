@@ -13,5 +13,4 @@ chown -R www-data:www-data /var/lib/nginx
 mkdir -p /var/log/php
 chown -R www-data:www-data /var/log/php
 
-#Launch supervisor to manage processes
-exec /usr/bin/supervisord -c /data/supervisord.conf
+exec runsvdir /etc/service

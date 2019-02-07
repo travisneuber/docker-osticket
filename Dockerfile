@@ -57,7 +57,7 @@ RUN set -x \
         msmtp \
         nginx \
         openldap \
-        supervisor \
+        runit \
     # Build dependencies
     && apk add --no-cache --virtual .build-deps \
         autoconf \

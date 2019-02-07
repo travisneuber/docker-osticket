@@ -12,17 +12,17 @@ RUN set -x \
     && php manage.php deploy -sv /install/usr/local/src/osticket \
     && chmod 755 /install/usr/local/src/osticket \
     # Hard link the sources to the public directory
-    && mkdir -p /install/data \
-    && cp -al /install/usr/local/src/osticket /install/data/upload \
+    && mkdir -p /install/var/www \
+    && cp -al /install/usr/local/src/osticket /install/var/www/html \
     # Hide setup
-    && rm -r /install/data/upload/setup \
+    && rm -r /install/var/www/html/setup \
     # Clean up
     && cd .. \
     && rm -rf osTicket
 RUN set -ex; \
     for lang in ar az bg ca cs da de el es_ES et fr hr hu it ja ko lt mk mn nl no fa pl pt_PT \
         pt_BR sk sl sr_CS fi sv_SE ro ru vi th tr uk zh_CN zh_TW; do \
-        curl -so /install/data/upload/include/i18n/${lang}.phar \
+        curl -so /install/var/www/html/include/i18n/${lang}.phar \
             https://s3.amazonaws.com/downloads.osticket.com/lang/${lang}.phar; \
     done
 RUN set -ex; \
@@ -31,14 +31,14 @@ RUN set -ex; \
     php make.php hydrate; \
     for plugin in $(find * -maxdepth 0 -type d ! -path doc ! -path lib); do \
         php -dphar.readonly=0 make.php build ${plugin}; \
-        mv ${plugin}.phar /install/data/upload/include/plugins; \
+        mv ${plugin}.phar /install/var/www/html/include/plugins; \
     done; \
     cd ..; \
     rm -rf osTicket-plugins
 RUN set -ex; \
     git clone --depth 1 https://github.com/devinsolutions/osTicket-slack-plugin.git; \
     cd osTicket-slack-plugin; \
-    mv slack /install/data/upload/include/plugins; \
+    mv slack /install/var/www/html/include/plugins; \
     cd ..; \
     rm -rf osTicket-slack-plugin
 COPY files /install

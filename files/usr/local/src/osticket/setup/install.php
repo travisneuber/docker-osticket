@@ -34,7 +34,7 @@ $vars = array(
   'cron_interval'   => getenv("CRON_INTERVAL")        ?: 5,
 
   'siri'     => getenv("INSTALL_SECRET"),
-  'config'   => getenv("INSTALL_CONFIG") ?: '/data/upload/include/ost-sampleconfig.php'
+  'config'   => getenv("INSTALL_CONFIG") ?: '/var/www/html/include/ost-sampleconfig.php'
 );
 
 //Script settings
@@ -95,7 +95,7 @@ define('CRON_JOB_FILE','/var/spool/cron/crontabs/www-data');
 $interval = (int)$vars['cron_interval'];
 if ($interval > 0) {
   echo "OSTicket cron job is set to run every {$interval} minutes\n";
-  $cron = "*/{$interval} * * * * /usr/local/bin/php -c /usr/local/etc/php/php.ini /data/upload/api/cron.php\n";
+  $cron = "*/{$interval} * * * * /usr/local/bin/php -c /usr/local/etc/php/php.ini /var/www/html/api/cron.php\n";
   file_put_contents(CRON_JOB_FILE, $cron);
 } else {
   echo "OSTicket cron job is disabled\n";
@@ -105,7 +105,7 @@ if ($interval > 0) {
 /************************* OSTicket Installation *******************************************/
 
 //Create installer class
-define('OSTICKET_CONFIGFILE','/data/upload/include/ost-config.php');
+define('OSTICKET_CONFIGFILE','/var/www/html/include/ost-config.php');
 $installer = new Installer(OSTICKET_CONFIGFILE); //Installer instance.
 
 //Determine if using linked container

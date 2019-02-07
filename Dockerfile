@@ -98,6 +98,6 @@ RUN set -x \
     && rm -rf /tmp/pear /var/cache/apk/*
 COPY --from=deployer /install /
 WORKDIR /data
-CMD ["/data/bin/start.sh"]
+CMD ["start"]
 EXPOSE 80
 HEALTHCHECK CMD curl -fIsS http://localhost/ || exit 1

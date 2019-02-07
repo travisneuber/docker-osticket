@@ -93,11 +93,12 @@ RUN set -x \
     # File upload permissions
     && chown nginx:www-data /var/tmp/nginx \
     && chmod g+rx /var/tmp/nginx \
+    # Create data dir
+    && mkdir /var/lib/osticket \
     # Clean up
     && apk del .build-deps \
     && rm -rf /tmp/pear /var/cache/apk/*
 COPY --from=deployer /install /
-WORKDIR /data
 CMD ["start"]
 EXPOSE 80
 HEALTHCHECK CMD curl -fIsS http://localhost/ || exit 1

@@ -160,7 +160,7 @@ elseif(!db_select_database($vars['dbname']) && !db_create_database($vars['dbname
 }
 
 //Create secret if not set by env var and not previously stored
-DEFINE('SECRET_FILE','/data/secret.txt');
+DEFINE('SECRET_FILE','/var/lib/osticket/secret.txt');
 if (!$vars['siri']) {
   if (file_exists(SECRET_FILE)) {
     echo "Loading installation secret\n";

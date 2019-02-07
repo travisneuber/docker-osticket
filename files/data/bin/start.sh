@@ -3,7 +3,7 @@
 set -e
 
 # Automate installation
-php /data/bin/install.php
+php /usr/local/src/osticket/setup/install.php
 echo Applying configuration file security
 chmod 644 /data/upload/include/ost-config.php
 

@@ -67,10 +67,12 @@ RUN set -x \
         openldap-dev \
         pcre-dev \
     # Install PHP extensions
+    && docker-php-ext-configure imap --with-imap-ssl \
     && docker-php-ext-install \
         curl \
         gd \
         gettext \
+        imap \
         intl \
         ldap \
         mbstring \
@@ -78,8 +80,6 @@ RUN set -x \
         opcache \
         sockets \
         xml \
-    && docker-php-ext-configure imap --with-imap-ssl \
-    && docker-php-ext-install imap \
     && pecl install apcu \
     && docker-php-ext-enable apcu \
     # Create msmtp log

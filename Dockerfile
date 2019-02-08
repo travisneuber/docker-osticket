@@ -90,7 +90,7 @@ RUN set -x \
     && chmod g+rx /var/tmp/nginx \
     # Clean up
     && apk del .build-deps \
-    && rm -rf /var/cache/apk/*
+    && rm -rf /tmp/pear /var/cache/apk/*
 COPY --from=deployer /install /
 WORKDIR /data
 CMD ["/data/bin/start.sh"]

@@ -34,7 +34,7 @@ $vars = array(
   'cron_interval'   => getenv("CRON_INTERVAL")        ?: 5,
 
   'siri'     => getenv("INSTALL_SECRET"),
-  'config'   => getenv("INSTALL_CONFIG") ?: '/data/upload/include/ost-sampleconfig.php'
+  'config'   => getenv("INSTALL_CONFIG") ?: '/var/www/html/include/ost-sampleconfig.php'
 );
 
 //Script settings
@@ -61,8 +61,8 @@ function convertStrToBool($varName, $default) {
 define("URL",$vars['url']);
 
 //Require files (must be done before any output to avoid session start warnings)
-chdir("/data/upload/setup_hidden");
-require "/data/upload/setup_hidden/setup.inc.php";
+chdir("/usr/local/src/osticket/setup");
+require "/usr/local/src/osticket/setup/setup.inc.php";
 require_once INC_DIR.'class.installer.php';
 
 
@@ -70,7 +70,7 @@ require_once INC_DIR.'class.installer.php';
 define('MAIL_CONFIG_FILE','/etc/msmtp');
 
 echo "Configuring mail settings\n";
-if (!$mailConfig = file_get_contents('/data/msmtp.conf')) {
+if (!$mailConfig = file_get_contents('/etc/default/msmtp')) {
   err("Failed to load mail configuration file");
 };
 $mailConfig = str_replace('%SMTP_HOSTNAME%', $vars['smtp_host'], $mailConfig);
@@ -95,7 +95,7 @@ define('CRON_JOB_FILE','/var/spool/cron/crontabs/www-data');
 $interval = (int)$vars['cron_interval'];
 if ($interval > 0) {
   echo "OSTicket cron job is set to run every {$interval} minutes\n";
-  $cron = "*/{$interval} * * * * /usr/local/bin/php -c /usr/local/etc/php/php.ini /data/upload/api/cron.php\n";
+  $cron = "*/{$interval} * * * * /usr/local/bin/php -c /usr/local/etc/php/php.ini /var/www/html/api/cron.php\n";
   file_put_contents(CRON_JOB_FILE, $cron);
 } else {
   echo "OSTicket cron job is disabled\n";
@@ -105,7 +105,7 @@ if ($interval > 0) {
 /************************* OSTicket Installation *******************************************/
 
 //Create installer class
-define('OSTICKET_CONFIGFILE','/data/upload/include/ost-config.php');
+define('OSTICKET_CONFIGFILE','/var/www/html/include/ost-config.php');
 $installer = new Installer(OSTICKET_CONFIGFILE); //Installer instance.
 
 //Determine if using linked container
@@ -160,7 +160,7 @@ elseif(!db_select_database($vars['dbname']) && !db_create_database($vars['dbname
 }
 
 //Create secret if not set by env var and not previously stored
-DEFINE('SECRET_FILE','/data/secret.txt');
+DEFINE('SECRET_FILE','/var/lib/osticket/secret.txt');
 if (!$vars['siri']) {
   if (file_exists(SECRET_FILE)) {
     echo "Loading installation secret\n";

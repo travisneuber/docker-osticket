@@ -1,0 +1,25 @@
+From b210e4f8424e0aa2c5be19447f211ee2e94b8e8e Mon Sep 17 00:00:00 2001
+From: JediKev <kevin@enhancesoft.com>
+Date: Wed, 13 Feb 2019 13:06:08 -0600
+Subject: [PATCH] issue: APC CLI
+
+This addresses issue 4720 where creating tickets via CLI fails to set a
+status and crashes with an "APC must be enabled" error. This adds a check to
+see if the APC module is loaded before continuing.
+---
+ include/class.ticket.php | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/class.ticket.php b/include/class.ticket.php
+index d50bba7f1..6b05ac642 100644
+--- a/include/class.ticket.php
++++ b/include/class.ticket.php
+@@ -3173,7 +3173,7 @@ function deleteDrafts() {
+     function save($refetch=false) {
+         if ($this->dirty) {
+             $this->updated = SqlFunction::NOW();
+-            if (isset($this->dirty['status_id']))
++            if (isset($this->dirty['status_id']) && PHP_SAPI !== 'cli')
+                 // Refetch the queue counts
+                 SavedQueue::clearCounts();
+         }

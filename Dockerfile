@@ -1,17 +1,14 @@
 # Deployment doesn't work on Alpine
 FROM php:7.2-cli AS deployer
 # DO NOT FORGET TO UPDATE "tags" FILE
-ENV OSTICKET_VERSION=1.11
+ENV OSTICKET_VERSION=1.12
 RUN set -x \
     && apt-get update \
     && apt-get install -y --no-install-recommends git-core unzip \
     && rm -rf /var/lib/apt/lists/*
-COPY issue-apc-cli.patch .
 RUN set -x \
     && git clone -b v${OSTICKET_VERSION} --depth 1 https://github.com/osTicket/osTicket.git \
     && cd osTicket \
-    # Patches
-    && patch -p1 < ../issue-apc-cli.patch \
     # Deploy sources
     && php manage.php deploy -sv /install/usr/local/src/osticket \
     && chmod 755 /install/usr/local/src/osticket \

@@ -11,6 +11,8 @@ RUN set -x \
     && cd osTicket \
     # Deploy sources
     && php manage.php deploy -sv /install/usr/local/src/osticket \
+    && sort -o /install/usr/local/src/osticket/include/.MANIFEST \
+        /install/usr/local/src/osticket/include/.MANIFEST \
     && chmod 755 /install/usr/local/src/osticket \
     # Hard link the sources to the public directory
     && mkdir -p /install/var/www \
@@ -31,8 +33,7 @@ RUN set -ex; \
     cd osTicket-plugins; \
     php make.php hydrate; \
     for plugin in $(find * -maxdepth 0 -type d ! -path doc ! -path lib); do \
-        php -dphar.readonly=0 make.php build ${plugin}; \
-        mv ${plugin}.phar /install/var/www/html/include/plugins; \
+        cp -r ${plugin} /install/var/www/html/include/plugins; \
     done; \
     cd ..; \
     rm -rf osTicket-plugins

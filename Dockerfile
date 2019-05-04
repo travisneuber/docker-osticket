@@ -102,5 +102,6 @@ RUN set -x \
     && rm -rf /tmp/pear /var/cache/apk/*
 COPY --from=deployer /install /
 CMD ["start"]
+STOPSIGNAL SIGTERM
 EXPOSE 80
 HEALTHCHECK CMD curl -fIsS http://localhost/ || exit 1

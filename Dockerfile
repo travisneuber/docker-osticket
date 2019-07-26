@@ -43,7 +43,6 @@ RUN set -ex; \
     mv slack /install/var/www/html/include/plugins; \
     cd ..; \
     rm -rf osTicket-slack-plugin
-COPY files /install
 
 FROM php:7.2-fpm-alpine3.9
 RUN set -x \
@@ -101,6 +100,7 @@ RUN set -x \
     && apk del .build-deps \
     && rm -rf /tmp/pear /var/cache/apk/*
 COPY --from=deployer /install /
+COPY files /
 CMD ["start"]
 STOPSIGNAL SIGTERM
 EXPOSE 80

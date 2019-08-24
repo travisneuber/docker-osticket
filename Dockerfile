@@ -44,7 +44,7 @@ RUN set -ex; \
     cd ..; \
     rm -rf osTicket-slack-plugin
 
-FROM php:7.2-fpm-alpine3.9
+FROM php:7.2-fpm-alpine3.10
 RUN set -x \
     # Runtime dependencies
     && apk add --no-cache --update \

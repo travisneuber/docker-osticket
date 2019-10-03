@@ -1,7 +1,7 @@
 # Deployment doesn't work on Alpine
 FROM php:7.2-cli AS deployer
 # DO NOT FORGET TO UPDATE "tags" FILE
-ENV OSTICKET_VERSION=1.12.2
+ENV OSTICKET_VERSION=1.12.3
 RUN set -ex; \
     \
     apt-get update; \

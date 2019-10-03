@@ -1,5 +1,5 @@
 # Deployment doesn't work on Alpine
-FROM php:7.2-cli AS deployer
+FROM php:7.3-cli AS deployer
 # DO NOT FORGET TO UPDATE "tags" FILE
 ENV OSTICKET_VERSION=1.12.3
 RUN set -ex; \
@@ -29,7 +29,7 @@ RUN set -ex; \
     cd ..; \
     rm -rf osTicket
 
-FROM php:7.2-fpm-alpine3.10
+FROM php:7.3-fpm-alpine3.10
 RUN set -ex; \
     \
     # Runtime dependencies

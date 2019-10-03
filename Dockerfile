@@ -28,30 +28,6 @@ RUN set -ex; \
     # Clean up
     cd ..; \
     rm -rf osTicket
-RUN set -ex; \
-    \
-    for lang in ar az bg ca cs da de el es_ES et fr hr hu it ja ko lt mk mn nl no fa pl pt_PT \
-        pt_BR sk sl sr_CS fi sv_SE ro ru vi th tr uk zh_CN zh_TW; do \
-        curl -so /install/var/www/html/include/i18n/${lang}.phar \
-            https://s3.amazonaws.com/downloads.osticket.com/lang/${lang}.phar; \
-    done
-RUN set -ex; \
-    \
-    git clone --depth 1 https://github.com/devinsolutions/osTicket-plugins.git; \
-    cd osTicket-plugins; \
-    php make.php hydrate; \
-    for plugin in $(find * -maxdepth 0 -type d ! -path doc ! -path lib); do \
-        cp -r ${plugin} /install/var/www/html/include/plugins; \
-    done; \
-    cd ..; \
-    rm -rf osTicket-plugins
-RUN set -ex; \
-    \
-    git clone --depth 1 https://github.com/devinsolutions/osTicket-slack-plugin.git; \
-    cd osTicket-slack-plugin; \
-    mv slack /install/var/www/html/include/plugins; \
-    cd ..; \
-    rm -rf osTicket-slack-plugin
 
 FROM php:7.2-fpm-alpine3.10
 RUN set -ex; \
@@ -119,6 +95,35 @@ RUN set -ex; \
     apk del .build-deps; \
     rm -rf /tmp/pear /var/cache/apk/*
 COPY --from=deployer /install /
+RUN set -ex; \
+    \
+    apk add --no-cache --virtual .build-deps \
+        git \
+    ; \
+    \
+    for lang in ar az bg ca cs da de el es_ES et fr hr hu it ja ko lt mk mn nl no fa pl pt_PT \
+        pt_BR sk sl sr_CS fi sv_SE ro ru vi th tr uk zh_CN zh_TW; do \
+        curl -so /var/www/html/include/i18n/${lang}.phar \
+            https://s3.amazonaws.com/downloads.osticket.com/lang/${lang}.phar; \
+    done; \
+    \
+    git clone --depth 1 https://github.com/devinsolutions/osTicket-plugins.git; \
+    cd osTicket-plugins; \
+    php make.php hydrate; \
+    for plugin in $(find * -maxdepth 0 -type d ! -path doc ! -path lib); do \
+        mv ${plugin} /var/www/html/include/plugins; \
+    done; \
+    cd ..; \
+    rm -rf osTicket-plugins; \
+    \
+    git clone --depth 1 https://github.com/devinsolutions/osTicket-slack-plugin.git; \
+    cd osTicket-slack-plugin; \
+    mv slack /var/www/html/include/plugins; \
+    cd ..; \
+    rm -rf osTicket-slack-plugin; \
+    \
+    apk del .build-deps; \
+    rm -rf /root/.composer /var/cache/apk/*
 COPY files /
 CMD ["start"]
 STOPSIGNAL SIGTERM

@@ -64,7 +64,7 @@ RUN set -ex; \
     \
     # Install PHP extensions
     docker-php-ext-configure imap --with-imap-ssl; \
-    docker-php-ext-install \
+    docker-php-ext-install -j "$(nproc)" \
         curl \
         gd \
         gettext \

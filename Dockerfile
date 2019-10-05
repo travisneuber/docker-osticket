@@ -40,7 +40,6 @@ RUN set -ex; \
         icu \
         libintl \
         libpng \
-        libxml2 \
         msmtp \
         nginx \
         openldap \
@@ -49,36 +48,30 @@ RUN set -ex; \
     \
     # Build dependencies
     apk add --no-cache --virtual .build-deps \
-        autoconf \
-        curl-dev \
-        g++ \
+        ${PHPIZE_DEPS} \
         gettext-dev \
         icu-dev \
         imap-dev \
         libpng-dev \
-        libxml2-dev \
-        make \
         openldap-dev \
-        pcre-dev \
     ; \
     \
     # Install PHP extensions
     docker-php-ext-configure imap --with-imap-ssl; \
     docker-php-ext-install -j "$(nproc)" \
-        curl \
         gd \
         gettext \
         imap \
         intl \
         ldap \
-        mbstring \
         mysqli \
-        opcache \
         sockets \
-        xml \
     ; \
     pecl install apcu; \
-    docker-php-ext-enable apcu; \
+    docker-php-ext-enable \
+        apcu \
+        opcache \
+    ; \
     \
     # Create msmtp log
     touch /var/log/msmtp.log; \

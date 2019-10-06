@@ -1,34 +1,3 @@
-# Deployment doesn't work on Alpine
-FROM php:7.3-cli AS deployer
-# DO NOT FORGET TO UPDATE "tags" FILE
-ENV OSTICKET_VERSION=1.12.3
-RUN set -ex; \
-    \
-    apt-get update; \
-    apt-get install -y --no-install-recommends \
-        git-core \
-        unzip \
-    ; \
-    \
-    rm -rf /var/lib/apt/lists/*
-RUN set -ex; \
-    \
-    git clone -b v${OSTICKET_VERSION} --depth 1 https://github.com/osTicket/osTicket.git; \
-    cd osTicket; \
-    # Deploy sources
-    php manage.php deploy -sv /install/usr/local/src/osticket; \
-    sort -o /install/usr/local/src/osticket/include/.MANIFEST \
-        /install/usr/local/src/osticket/include/.MANIFEST; \
-    chmod 755 /install/usr/local/src/osticket; \
-    # Hard link the sources to the public directory
-    mkdir -p /install/var/www; \
-    cp -al /install/usr/local/src/osticket /install/var/www/html; \
-    # Hide setup
-    rm -r /install/var/www/html/setup; \
-    # Clean up
-    cd ..; \
-    rm -rf osTicket
-
 FROM php:7.3-fpm-alpine3.10
 RUN set -ex; \
     \
@@ -87,12 +56,26 @@ RUN set -ex; \
     # Clean up
     apk del .build-deps; \
     rm -rf /tmp/pear /var/cache/apk/*
-COPY --from=deployer /install /
+# DO NOT FORGET TO UPDATE "tags" FILE
+ENV OSTICKET_VERSION=1.12.3 \
+    OSTICKET_SHA256SUM=0e4bf6d351ab6dbb00c7d91c505fa2ad629a1e08973c1946cc842dffec4599dd
 RUN set -ex; \
     \
     apk add --no-cache --virtual .build-deps \
         git \
     ; \
+    \
+    wget -q -O osTicket.zip https://github.com/osTicket/osTicket/releases/download/\
+v${OSTICKET_VERSION}/osTicket-v${OSTICKET_VERSION}.zip; \
+    echo "${OSTICKET_SHA256SUM}  osTicket.zip" | sha256sum -c; \
+    unzip osTicket.zip 'upload/*'; \
+    rm osTicket.zip; \
+    mkdir /usr/local/src; \
+    mv upload /usr/local/src/osticket; \
+    # Hard link the sources to the public directory
+    cp -al /usr/local/src/osticket/. /var/www/html; \
+    # Hide setup
+    rm -r /var/www/html/setup; \
     \
     for lang in ar az bg ca cs da de el es_ES et fr hr hu it ja ko lt mk mn nl no fa pl pt_PT \
         pt_BR sk sl sr_CS fi sv_SE ro ru vi th tr uk zh_CN zh_TW; do \

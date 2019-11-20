@@ -57,8 +57,8 @@ RUN set -ex; \
     apk del .build-deps; \
     rm -rf /tmp/pear /var/cache/apk/*
 # DO NOT FORGET TO UPDATE "tags" FILE
-ENV OSTICKET_VERSION=1.12.3 \
-    OSTICKET_SHA256SUM=0e4bf6d351ab6dbb00c7d91c505fa2ad629a1e08973c1946cc842dffec4599dd
+ENV OSTICKET_VERSION=1.12.4 \
+    OSTICKET_SHA256SUM=6d4ce3a8a15498639c78785abc276d37ac228e8fa01bbd5d5e9b6c4a8acab5a3
 RUN set -ex; \
     \
     apk add --no-cache --virtual .build-deps \

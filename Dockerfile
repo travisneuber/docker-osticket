@@ -103,7 +103,7 @@ v${OSTICKET_VERSION}/osTicket-v${OSTICKET_VERSION}.zip; \
     \
     apk del .build-deps; \
     rm -rf /root/.composer /var/cache/apk/*
-COPY files /
+COPY root /
 CMD ["start"]
 STOPSIGNAL SIGTERM
 EXPOSE 80

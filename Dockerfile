@@ -3,9 +3,7 @@ RUN set -ex; \
     \
     # Runtime dependencies
     apk add --no-cache \
-        ca-certificates \
         c-client \
-        curl \
         icu \
         libintl \
         libpng \

@@ -9,6 +9,7 @@ RUN set -ex; \
         icu \
         libintl \
         libpng \
+        libzip \
         msmtp \
         nginx \
         openldap \
@@ -22,6 +23,7 @@ RUN set -ex; \
         icu-dev \
         imap-dev \
         libpng-dev \
+        libzip-dev \
         openldap-dev \
     ; \
     \
@@ -35,6 +37,7 @@ RUN set -ex; \
         ldap \
         mysqli \
         sockets \
+        zip \
     ; \
     pecl install apcu; \
     docker-php-ext-enable \
@@ -57,8 +60,8 @@ RUN set -ex; \
     apk del .build-deps; \
     rm -rf /tmp/pear /var/cache/apk/*
 # DO NOT FORGET TO UPDATE "tags" FILE
-ENV OSTICKET_VERSION=1.12.5 \
-    OSTICKET_SHA256SUM=df177c4b6fae878f3a6e7c00e2efc5a2965b5c1da7b82b59ce90e16e568f4f70
+ENV OSTICKET_VERSION=1.14.1 \
+    OSTICKET_SHA256SUM=fa751b78fe84212376ab25e867b93c8a45d426917ae7d946f4be216d9b23505f
 RUN set -ex; \
     \
     apk add --no-cache --virtual .build-deps \

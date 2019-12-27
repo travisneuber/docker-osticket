@@ -47,10 +47,6 @@ RUN set -ex; \
     touch /var/log/msmtp.log; \
     chown www-data:www-data /var/log/msmtp.log; \
     \
-    # File upload permissions
-    chown nginx:www-data /var/tmp/nginx; \
-    chmod g+rx /var/tmp/nginx; \
-    \
     # Create data dir
     mkdir /var/lib/osticket; \
     \

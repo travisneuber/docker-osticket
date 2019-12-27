@@ -1,4 +1,4 @@
-FROM php:7.3-fpm-alpine3.10
+FROM php:7.3-fpm-alpine3.11
 RUN set -ex; \
     \
     # Runtime dependencies

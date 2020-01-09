@@ -1,6 +1,10 @@
 FROM php:7.3-fpm-alpine3.11
 RUN set -ex; \
     \
+    export CFLAGS="-Os"; \
+    export CPPFLAGS="${CFLAGS}"; \
+    export LDFLAGS="-Wl,--strip-all"; \
+    \
     # Runtime dependencies
     apk add --no-cache \
         c-client \

@@ -62,10 +62,6 @@ ENV OSTICKET_VERSION=1.14.1 \
     OSTICKET_SHA256SUM=fa751b78fe84212376ab25e867b93c8a45d426917ae7d946f4be216d9b23505f
 RUN set -ex; \
     \
-    apk add --no-cache --virtual .build-deps \
-        git \
-    ; \
-    \
     wget -q -O osTicket.zip https://github.com/osTicket/osTicket/releases/download/\
 v${OSTICKET_VERSION}/osTicket-v${OSTICKET_VERSION}.zip; \
     echo "${OSTICKET_SHA256SUM}  osTicket.zip" | sha256sum -c; \
@@ -80,27 +76,36 @@ v${OSTICKET_VERSION}/osTicket-v${OSTICKET_VERSION}.zip; \
     \
     for lang in ar az bg ca cs da de el es_ES et fr hr hu it ja ko lt mk mn nl no fa pl pt_PT \
         pt_BR sk sl sr_CS fi sv_SE ro ru vi th tr uk zh_CN zh_TW; do \
-        curl -so /var/www/html/include/i18n/${lang}.phar \
+        wget -q -O /var/www/html/include/i18n/${lang}.phar \
             https://s3.amazonaws.com/downloads.osticket.com/lang/${lang}.phar; \
-    done; \
+    done
+ENV OSTICKET_PLUGINS_VERSION=6ba7e511e7d24c73603be88e51f13b035ca8a79c \
+    OSTICKET_PLUGINS_SHA256SUM=a6ca85c960d13d07192aa2864845ff4d7cc356d6460ec2465e0b9332e2de899d
+RUN set -ex; \
     \
-    git clone --depth 1 https://github.com/devinsolutions/osTicket-plugins.git; \
+    wget -q -O osTicket-plugins.tar.gz https://github.com/devinsolutions/osTicket-plugins/archive/\
+${OSTICKET_PLUGINS_VERSION}.tar.gz; \
+    echo "${OSTICKET_PLUGINS_SHA256SUM}  osTicket-plugins.tar.gz" | sha256sum -c; \
+    tar -xzf osTicket-plugins.tar.gz --one-top-level --strip-components 1; \
+    rm osTicket-plugins.tar.gz; \
+    \
     cd osTicket-plugins; \
     php make.php hydrate; \
-    for plugin in $(find * -maxdepth 0 -type d ! -path doc ! -path lib); do \
-        mv ${plugin} /var/www/html/include/plugins; \
-    done; \
+    find * -maxdepth 0 -type d ! -path doc ! -path lib -exec mv '{}' \
+        /var/www/html/include/plugins +; \
     cd ..; \
-    rm -rf osTicket-plugins; \
     \
-    git clone --depth 1 https://github.com/devinsolutions/osTicket-slack-plugin.git; \
-    cd osTicket-slack-plugin; \
-    mv slack /var/www/html/include/plugins; \
-    cd ..; \
-    rm -rf osTicket-slack-plugin; \
+    rm -r osTicket-plugins /root/.composer
+ENV OSTICKET_SLACK_VERSION=cd98e54fcadf1a5dd8e78b0a0380561c7ef29b02 \
+    OSTICKET_SLACK_SHA256SUM=9cdead701fd1be91a64451dfaca98148b997dc4e5a0ff1a61965bffeebd65540
+RUN set -ex; \
     \
-    apk del .build-deps; \
-    rm -rf /root/.composer /var/cache/apk/*
+    wget -q -O osTicket-slack-plugin.tar.gz https://github.com/devinsolutions/\
+osTicket-slack-plugin/archive/${OSTICKET_SLACK_VERSION}.tar.gz; \
+    echo "${OSTICKET_SLACK_SHA256SUM}  osTicket-slack-plugin.tar.gz" | sha256sum -c; \
+    tar -xzf osTicket-slack-plugin.tar.gz -C /var/www/html/include/plugins --strip-components 1 \
+        osTicket-slack-plugin-${OSTICKET_SLACK_VERSION}/slack; \
+    rm osTicket-slack-plugin.tar.gz
 COPY root /
 CMD ["start"]
 STOPSIGNAL SIGTERM

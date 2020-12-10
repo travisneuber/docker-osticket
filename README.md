@@ -19,7 +19,7 @@ It has a few modifications:
   * EMail support
 
 osTicket is being served by [nginx](http://wiki.nginx.org/Main) using
-[PHP-FPM](http://php-fpm.org/) with PHP 7.3.
+[PHP-FPM](http://php-fpm.org/) with PHP 7.4.
 PHP [mail](http://php.net/manual/en/function.mail.php) function is configured to use
 [msmtp](http://msmtp.sourceforge.net/) to send out-going messages.
 

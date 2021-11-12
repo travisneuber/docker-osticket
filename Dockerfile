@@ -58,8 +58,8 @@ RUN set -ex; \
     apk del .build-deps; \
     rm -rf /tmp/pear /var/cache/apk/*
 # DO NOT FORGET TO UPDATE "tags" FILE
-ENV OSTICKET_VERSION=1.15.2 \
-    OSTICKET_SHA256SUM=83c435956f3975eefcc001152ce848bf00f26cdc97305e312b7653d6f843a252
+ENV OSTICKET_VERSION=1.15.4 \
+    OSTICKET_SHA256SUM=6c7cf5fe74258dd0beac6176c438468f468a0a3f07f1f6a0349cc68a9e514302
 RUN set -ex; \
     \
     wget -q -O osTicket.zip https://github.com/osTicket/osTicket/releases/download/\

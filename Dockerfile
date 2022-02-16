@@ -83,8 +83,8 @@ v${OSTICKET_VERSION}/osTicket-v${OSTICKET_VERSION}.zip; \
         wget -q -O /var/www/html/include/i18n/${lang}.phar \
             https://s3.amazonaws.com/downloads.osticket.com/lang/1.14.x/${lang}.phar; \
     done
-ENV OSTICKET_PLUGINS_VERSION=93d7d6d11670c7eac7a4e432dbc15f40375a70cf \
-    OSTICKET_PLUGINS_SHA256SUM=0d4b60045be607d377a7d27a3d5143d5db36041f992c8924816604a81bb342d6
+ENV OSTICKET_PLUGINS_VERSION=ba05735485303055c0224a9190c9e1a61e041f6f \
+    OSTICKET_PLUGINS_SHA256SUM=9aa8d7acc2f41ad14247d97ae85bea66c4c79d92590162994bef1ec968e84e44
 RUN set -ex; \
     \
     wget -q -O osTicket-plugins.tar.gz https://github.com/devinsolutions/osTicket-plugins/archive/\

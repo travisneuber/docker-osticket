@@ -75,8 +75,9 @@ v${OSTICKET_VERSION}/osTicket-v${OSTICKET_VERSION}.zip; \
     # Hide setup
     rm -r /var/www/html/setup; \
     \
-    for lang in ar az bg ca cs da de el es_ES et fr hr hu it ja ko lt mk mn nl no fa pl pt_PT \
-        pt_BR sk sl sr_CS fi sv_SE ro ru vi th tr uk zh_CN zh_TW; do \
+    for lang in ar_EG ar_SA az bg bn bs ca cs da de el es_AR es_ES es_MX et eu fa fi fr gl he hi \
+        hr hu id is it ja ka km ko lt lv mk mn ms nl no pl pt_BR pt_PT ro ru sk sl sq sr sr_CS \
+        sv_SE sw th tr uk ur_IN ur_PK vi zh_CN zh_TW; do \
         # This URL is the same as what is used by the official osTicket Downloads page. This URL is
         # used even for minor versions >= 14.
         wget -q -O /var/www/html/include/i18n/${lang}.phar \

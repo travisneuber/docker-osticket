@@ -1,4 +1,4 @@
-FROM php:7.4-fpm-alpine3.15
+FROM php:8.0-fpm-alpine3.15
 RUN set -ex; \
     \
     export CFLAGS="-Os"; \
@@ -58,8 +58,8 @@ RUN set -ex; \
     apk del .build-deps; \
     rm -rf /tmp/pear /var/cache/apk/*
 # DO NOT FORGET TO UPDATE "image-version" FILE
-ENV OSTICKET_VERSION=1.15.4 \
-    OSTICKET_SHA256SUM=6c7cf5fe74258dd0beac6176c438468f468a0a3f07f1f6a0349cc68a9e514302
+ENV OSTICKET_VERSION=1.16.1 \
+    OSTICKET_SHA256SUM=4cfb6a297b48f551b0988a7df72448fe7ec22ee38e4023fafc19ead41fb76b38
 RUN set -ex; \
     \
     wget -q -O osTicket.zip https://github.com/osTicket/osTicket/releases/download/\

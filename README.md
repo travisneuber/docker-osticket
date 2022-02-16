@@ -3,7 +3,7 @@ docker-osticket
 
 # Introduction
 
-Docker image for running version 1.15 of [osTicket](http://osticket.com/).
+Docker image for running version 1.16 of [osTicket](http://osticket.com/).
 
 This image has been created from the original docker-osticket image by
 [Petter A. Helset](mailto:petter@helset.eu).
@@ -19,7 +19,7 @@ It has a few modifications:
   * EMail support
 
 osTicket is being served by [nginx](http://wiki.nginx.org/Main) using
-[PHP-FPM](http://php-fpm.org/) with PHP 7.4.
+[PHP-FPM](http://php-fpm.org/) with PHP 8.0.
 PHP [mail](http://php.net/manual/en/function.mail.php) function is configured to use
 [msmtp](http://msmtp.sourceforge.net/) to send out-going messages.
 

@@ -57,6 +57,7 @@ RUN set -ex; \
     # Clean up
     apk del .build-deps; \
     rm -rf /tmp/pear /var/cache/apk/*
+# DO NOT FORGET TO CHECK THE LANGUAGE PACK DOWNLOAD URL BELOW
 # DO NOT FORGET TO UPDATE "image-version" FILE
 ENV OSTICKET_VERSION=1.16.1 \
     OSTICKET_SHA256SUM=4cfb6a297b48f551b0988a7df72448fe7ec22ee38e4023fafc19ead41fb76b38
@@ -76,8 +77,10 @@ v${OSTICKET_VERSION}/osTicket-v${OSTICKET_VERSION}.zip; \
     \
     for lang in ar az bg ca cs da de el es_ES et fr hr hu it ja ko lt mk mn nl no fa pl pt_PT \
         pt_BR sk sl sr_CS fi sv_SE ro ru vi th tr uk zh_CN zh_TW; do \
+        # This URL is the same as what is used by the official osTicket Downloads page. This URL is
+        # used even for minor versions >= 14.
         wget -q -O /var/www/html/include/i18n/${lang}.phar \
-            https://s3.amazonaws.com/downloads.osticket.com/lang/${lang}.phar; \
+            https://s3.amazonaws.com/downloads.osticket.com/lang/1.14.x/${lang}.phar; \
     done
 ENV OSTICKET_PLUGINS_VERSION=93d7d6d11670c7eac7a4e432dbc15f40375a70cf \
     OSTICKET_PLUGINS_SHA256SUM=0d4b60045be607d377a7d27a3d5143d5db36041f992c8924816604a81bb342d6

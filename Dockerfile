@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1.3
+
 FROM php:8.0-fpm-alpine3.15
 RUN set -ex; \
     \
@@ -61,7 +63,13 @@ RUN set -ex; \
 # DO NOT FORGET TO UPDATE "image-version" FILE
 ENV OSTICKET_VERSION=1.16.1 \
     OSTICKET_SHA256SUM=4cfb6a297b48f551b0988a7df72448fe7ec22ee38e4023fafc19ead41fb76b38
-RUN set -ex; \
+RUN --mount=type=bind,source=osticket-glob-brace.patch,target=/tmp/osticket-glob-brace.patch \
+    \
+    set -ex; \
+    \
+    apk add --no-cache --virtual .install-deps \
+        patch \
+    ; \
     \
     wget -q -O osTicket.zip https://github.com/osTicket/osTicket/releases/download/\
 v${OSTICKET_VERSION}/osTicket-v${OSTICKET_VERSION}.zip; \
@@ -70,6 +78,8 @@ v${OSTICKET_VERSION}/osTicket-v${OSTICKET_VERSION}.zip; \
     rm osTicket.zip; \
     mkdir /usr/local/src; \
     mv upload /usr/local/src/osticket; \
+    # Patch usage of GLOB_BRACE
+    patch -d /usr/local/src/osticket -Np1 -i /tmp/osticket-glob-brace.patch; \
     # Hard link the sources to the public directory
     cp -al /usr/local/src/osticket/. /var/www/html; \
     # Hide setup
@@ -82,7 +92,10 @@ v${OSTICKET_VERSION}/osTicket-v${OSTICKET_VERSION}.zip; \
         # used even for minor versions >= 14.
         wget -q -O /var/www/html/include/i18n/${lang}.phar \
             https://s3.amazonaws.com/downloads.osticket.com/lang/1.14.x/${lang}.phar; \
-    done
+    done; \
+    \
+    apk del .install-deps; \
+    rm -rf /var/cache/apk/*
 ENV OSTICKET_PLUGINS_VERSION=ba05735485303055c0224a9190c9e1a61e041f6f \
     OSTICKET_PLUGINS_SHA256SUM=9aa8d7acc2f41ad14247d97ae85bea66c4c79d92590162994bef1ec968e84e44
 RUN set -ex; \

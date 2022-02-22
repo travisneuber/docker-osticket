@@ -1,4 +1,6 @@
-FROM php:7.4-fpm-alpine3.15
+# syntax=docker/dockerfile:1.3
+
+FROM php:8.0-fpm-alpine3.15
 RUN set -ex; \
     \
     export CFLAGS="-Os"; \
@@ -57,10 +59,17 @@ RUN set -ex; \
     # Clean up
     apk del .build-deps; \
     rm -rf /tmp/pear /var/cache/apk/*
+# DO NOT FORGET TO CHECK THE LANGUAGE PACK DOWNLOAD URL BELOW
 # DO NOT FORGET TO UPDATE "image-version" FILE
-ENV OSTICKET_VERSION=1.15.4 \
-    OSTICKET_SHA256SUM=6c7cf5fe74258dd0beac6176c438468f468a0a3f07f1f6a0349cc68a9e514302
-RUN set -ex; \
+ENV OSTICKET_VERSION=1.16.1 \
+    OSTICKET_SHA256SUM=4cfb6a297b48f551b0988a7df72448fe7ec22ee38e4023fafc19ead41fb76b38
+RUN --mount=type=bind,source=osticket-glob-brace.patch,target=/tmp/osticket-glob-brace.patch \
+    \
+    set -ex; \
+    \
+    apk add --no-cache --virtual .install-deps \
+        patch \
+    ; \
     \
     wget -q -O osTicket.zip https://github.com/osTicket/osTicket/releases/download/\
 v${OSTICKET_VERSION}/osTicket-v${OSTICKET_VERSION}.zip; \
@@ -69,18 +78,26 @@ v${OSTICKET_VERSION}/osTicket-v${OSTICKET_VERSION}.zip; \
     rm osTicket.zip; \
     mkdir /usr/local/src; \
     mv upload /usr/local/src/osticket; \
+    # Patch usage of GLOB_BRACE
+    patch -d /usr/local/src/osticket -Np1 -i /tmp/osticket-glob-brace.patch; \
     # Hard link the sources to the public directory
     cp -al /usr/local/src/osticket/. /var/www/html; \
     # Hide setup
     rm -r /var/www/html/setup; \
     \
-    for lang in ar az bg ca cs da de el es_ES et fr hr hu it ja ko lt mk mn nl no fa pl pt_PT \
-        pt_BR sk sl sr_CS fi sv_SE ro ru vi th tr uk zh_CN zh_TW; do \
+    for lang in ar_EG ar_SA az bg bn bs ca cs da de el es_AR es_ES es_MX et eu fa fi fr gl he hi \
+        hr hu id is it ja ka km ko lt lv mk mn ms nl no pl pt_BR pt_PT ro ru sk sl sq sr sr_CS \
+        sv_SE sw th tr uk ur_IN ur_PK vi zh_CN zh_TW; do \
+        # This URL is the same as what is used by the official osTicket Downloads page. This URL is
+        # used even for minor versions >= 14.
         wget -q -O /var/www/html/include/i18n/${lang}.phar \
-            https://s3.amazonaws.com/downloads.osticket.com/lang/${lang}.phar; \
-    done
-ENV OSTICKET_PLUGINS_VERSION=93d7d6d11670c7eac7a4e432dbc15f40375a70cf \
-    OSTICKET_PLUGINS_SHA256SUM=0d4b60045be607d377a7d27a3d5143d5db36041f992c8924816604a81bb342d6
+            https://s3.amazonaws.com/downloads.osticket.com/lang/1.14.x/${lang}.phar; \
+    done; \
+    \
+    apk del .install-deps; \
+    rm -rf /var/cache/apk/*
+ENV OSTICKET_PLUGINS_VERSION=ba05735485303055c0224a9190c9e1a61e041f6f \
+    OSTICKET_PLUGINS_SHA256SUM=9aa8d7acc2f41ad14247d97ae85bea66c4c79d92590162994bef1ec968e84e44
 RUN set -ex; \
     \
     wget -q -O osTicket-plugins.tar.gz https://github.com/devinsolutions/osTicket-plugins/archive/\

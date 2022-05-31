@@ -1,6 +1,4 @@
-# syntax=docker/dockerfile:1.3
-
-FROM php:8.0-fpm-alpine3.15
+FROM php:8.0-fpm-alpine3.16
 RUN set -ex; \
     \
     export CFLAGS="-Os"; \
@@ -61,15 +59,9 @@ RUN set -ex; \
     rm -rf /tmp/pear /var/cache/apk/*
 # DO NOT FORGET TO CHECK THE LANGUAGE PACK DOWNLOAD URL BELOW
 # DO NOT FORGET TO UPDATE "image-version" FILE
-ENV OSTICKET_VERSION=1.16.1 \
-    OSTICKET_SHA256SUM=4cfb6a297b48f551b0988a7df72448fe7ec22ee38e4023fafc19ead41fb76b38
-RUN --mount=type=bind,source=osticket-glob-brace.patch,target=/tmp/osticket-glob-brace.patch \
-    \
-    set -ex; \
-    \
-    apk add --no-cache --virtual .install-deps \
-        patch \
-    ; \
+ENV OSTICKET_VERSION=1.16.3 \
+    OSTICKET_SHA256SUM=7d9c1ae7663e66d189b70d29fe02844d5ec2324a0f4cca545205a55f29ff72aa
+RUN set -ex; \
     \
     wget -q -O osTicket.zip https://github.com/osTicket/osTicket/releases/download/\
 v${OSTICKET_VERSION}/osTicket-v${OSTICKET_VERSION}.zip; \
@@ -78,8 +70,6 @@ v${OSTICKET_VERSION}/osTicket-v${OSTICKET_VERSION}.zip; \
     rm osTicket.zip; \
     mkdir /usr/local/src; \
     mv upload /usr/local/src/osticket; \
-    # Patch usage of GLOB_BRACE
-    patch -d /usr/local/src/osticket -Np1 -i /tmp/osticket-glob-brace.patch; \
     # Hard link the sources to the public directory
     cp -al /usr/local/src/osticket/. /var/www/html; \
     # Hide setup
@@ -92,12 +82,9 @@ v${OSTICKET_VERSION}/osTicket-v${OSTICKET_VERSION}.zip; \
         # used even for minor versions >= 14.
         wget -q -O /var/www/html/include/i18n/${lang}.phar \
             https://s3.amazonaws.com/downloads.osticket.com/lang/1.14.x/${lang}.phar; \
-    done; \
-    \
-    apk del .install-deps; \
-    rm -rf /var/cache/apk/*
-ENV OSTICKET_PLUGINS_VERSION=ba05735485303055c0224a9190c9e1a61e041f6f \
-    OSTICKET_PLUGINS_SHA256SUM=9aa8d7acc2f41ad14247d97ae85bea66c4c79d92590162994bef1ec968e84e44
+    done
+ENV OSTICKET_PLUGINS_VERSION=cc4bf22f17cc0bebd1e1958786a271f02d7f2645 \
+    OSTICKET_PLUGINS_SHA256SUM=c34f9bee929eb256d62aee57b458d89e6a8dc258948a5850f9f314aa44fd20d8
 RUN set -ex; \
     \
     wget -q -O osTicket-plugins.tar.gz https://github.com/devinsolutions/osTicket-plugins/archive/\

@@ -3,15 +3,15 @@ docker-osticket
 
 # Introduction
 
-Docker image for running version 1.16 of [osTicket](http://osticket.com/).
+Docker image for running version 1.17 of [osTicket](http://osticket.com/).
 
 This image has been created from the original docker-osticket image by
-[Petter A. Helset](mailto:petter@helset.eu).
+[Petter A. Helset](mailto:petter@helset.eu) and modified by devinsolutions and later travisneuber.
 
 It has a few modifications:
 
   * Documentation added, hurray!
-  * Base OS image fixed to Alpine Linux
+  * Base OS image fixed to Debian Linux
   * AJAX issues fixed that made original image unusable
   * Now designed to work with a linked [MySQL](https://registry.hub.docker.com/u/library/mysql/)
     docker container.
@@ -40,7 +40,7 @@ docker run -d \
 Now run this image and link the MySQL container.
 
 ```bash
-docker run -d --name osticket --link osticket_mysql:mysql -p 8080:80 devinsolutions/osticket
+docker run -d --name osticket --link osticket_mysql:mysql -p 8080:80 jerkytest/osticket
 ```
 
 Wait for the installation to complete then browse to your osTicket staff control panel at
@@ -64,7 +64,7 @@ docker run -d \
     --link osticket_mysql:mysql \
      --name osticket\
      -p 8080:80 \
-     devinsolutions/osticket
+     jerkytest/osticket
 ```
 
 Note (2): osTicket automatically redirects `http://localhost:8080/scp` to `http://localhost/scp/`.

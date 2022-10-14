@@ -1,80 +1,90 @@
-FROM php:8.0-fpm-alpine3.16
+FROM php:8.0-fpm-buster
 RUN set -ex; \
     \
     export CFLAGS="-Os"; \
     export CPPFLAGS="${CFLAGS}"; \
-    export LDFLAGS="-Wl,--strip-all"; \
-    \
-    # Runtime dependencies
-    apk add --no-cache \
-        c-client \
-        icu \
-        libintl \
-        libpng \
-        libzip \
-        msmtp \
-        nginx \
-        openldap \
-        runit \
-    ; \
-    \
-    # Build dependencies
-    apk add --no-cache --virtual .build-deps \
-        ${PHPIZE_DEPS} \
-        gettext-dev \
-        icu-dev \
-        imap-dev \
-        libpng-dev \
-        libzip-dev \
-        openldap-dev \
-    ; \
-    \
-    # Install PHP extensions
-    docker-php-ext-configure imap --with-imap-ssl; \
-    docker-php-ext-install -j "$(nproc)" \
-        gd \
-        gettext \
-        imap \
-        intl \
-        ldap \
-        mysqli \
-        sockets \
-        zip \
-    ; \
-    pecl install apcu; \
-    docker-php-ext-enable \
-        apcu \
-        opcache \
-    ; \
-    \
-    # Create msmtp log
-    touch /var/log/msmtp.log; \
-    chown www-data:www-data /var/log/msmtp.log; \
-    \
-    # Create data dir
-    mkdir /var/lib/osticket; \
-    \
-    # Clean up
-    apk del .build-deps; \
-    rm -rf /tmp/pear /var/cache/apk/*
+    export LDFLAGS="-Wl,--strip-all";
+RUN apt update -y
+# Runtime dependencies
+RUN apt install -y \
+    lsb-release \
+    ca-certificates \
+    apt-transport-https \
+    software-properties-common \
+    gnupg2 \
+    wget \
+    curl \
+    zip \
+    unzip \
+    autoconf \
+    dpkg-dev \
+    file \
+    g++ \
+    gcc \
+    libc-dev \
+    make \
+    pkg-config \
+    re2c \
+    xz-utils \
+    nginx \
+    msmtp \
+    runit \
+    cron \
+;
+# Build dependencies
+RUN apt install -y \
+    ${PHPIZE_DEPS} \
+    libc-client-dev \
+    libkrb5-dev \
+    zlib1g-dev \
+    libpng-dev \
+    libicu-dev \
+    libldb-dev \
+    libldap2-dev \
+    libzip-dev \
+    dos2unix \
+;
+# Install PHP extensions
+RUN docker-php-ext-configure imap --with-kerberos --with-imap-ssl && \
+    docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/; 
+RUN docker-php-ext-install -j "$(nproc)" \
+    gd \
+    gettext \
+    imap \
+    intl \
+    ldap \
+    mysqli \
+    sockets \
+    zip \
+;
+RUN pecl install apcu; 
+RUN docker-php-ext-enable \
+    apcu \
+    opcache \
+;
+# Create msmtp log
+RUN touch /var/log/msmtp.log; 
+RUN chown www-data:www-data /var/log/msmtp.log; 
+# Create data dir
+RUN mkdir /var/lib/osticket;
+# Clean up
+RUN rm -rf /var/lib/apt/lists/*
 # DO NOT FORGET TO CHECK THE LANGUAGE PACK DOWNLOAD URL BELOW
 # DO NOT FORGET TO UPDATE "image-version" FILE
-ENV OSTICKET_VERSION=1.16.3 \
-    OSTICKET_SHA256SUM=7d9c1ae7663e66d189b70d29fe02844d5ec2324a0f4cca545205a55f29ff72aa
+ENV OSTICKET_VERSION=1.17
 RUN set -ex; \
     \
     wget -q -O osTicket.zip https://github.com/osTicket/osTicket/releases/download/\
 v${OSTICKET_VERSION}/osTicket-v${OSTICKET_VERSION}.zip; \
-    echo "${OSTICKET_SHA256SUM}  osTicket.zip" | sha256sum -c; \
     unzip osTicket.zip 'upload/*'; \
     rm osTicket.zip; \
-    mkdir /usr/local/src; \
+    # mkdir /usr/local/src; \
     mv upload /usr/local/src/osticket; \
     # Hard link the sources to the public directory
     cp -al /usr/local/src/osticket/. /var/www/html; \
     # Hide setup
-    rm -r /var/www/html/setup; \
-    \
+    rm -r /var/www/html/setup;
+RUN set -ex; \
     for lang in ar_EG ar_SA az bg bn bs ca cs da de el es_AR es_ES es_MX et eu fa fi fr gl he hi \
         hr hu id is it ja ka km ko lt lv mk mn ms nl no pl pt_BR pt_PT ro ru sk sl sq sr sr_CS \
         sv_SE sw th tr uk ur_IN ur_PK vi zh_CN zh_TW; do \
@@ -83,34 +93,22 @@ v${OSTICKET_VERSION}/osTicket-v${OSTICKET_VERSION}.zip; \
         wget -q -O /var/www/html/include/i18n/${lang}.phar \
             https://s3.amazonaws.com/downloads.osticket.com/lang/1.14.x/${lang}.phar; \
     done
-ENV OSTICKET_PLUGINS_VERSION=cc4bf22f17cc0bebd1e1958786a271f02d7f2645 \
-    OSTICKET_PLUGINS_SHA256SUM=c34f9bee929eb256d62aee57b458d89e6a8dc258948a5850f9f314aa44fd20d8
+ENV OSTICKET_PLUGINS_VERSION=1.17.x 
 RUN set -ex; \
     \
-    wget -q -O osTicket-plugins.tar.gz https://github.com/devinsolutions/osTicket-plugins/archive/\
-${OSTICKET_PLUGINS_VERSION}.tar.gz; \
-    echo "${OSTICKET_PLUGINS_SHA256SUM}  osTicket-plugins.tar.gz" | sha256sum -c; \
+    wget -q -O osTicket-plugins.tar.gz https://codeload.github.com/osTicket/osTicket-plugins/tar.gz/refs/heads/\
+${OSTICKET_PLUGINS_VERSION}; \
     tar -xzf osTicket-plugins.tar.gz --one-top-level --strip-components 1; \
     rm osTicket-plugins.tar.gz; \
     \
     cd osTicket-plugins; \
-    php make.php hydrate; \
-    find * -maxdepth 0 -type d ! -path doc ! -path lib -exec mv '{}' \
-        /var/www/html/include/plugins +; \
-    cd ..; \
-    \
-    rm -r osTicket-plugins /root/.composer
-ENV OSTICKET_SLACK_VERSION=cd98e54fcadf1a5dd8e78b0a0380561c7ef29b02 \
-    OSTICKET_SLACK_SHA256SUM=9cdead701fd1be91a64451dfaca98148b997dc4e5a0ff1a61965bffeebd65540
-RUN set -ex; \
-    \
-    wget -q -O osTicket-slack-plugin.tar.gz https://github.com/devinsolutions/\
-osTicket-slack-plugin/archive/${OSTICKET_SLACK_VERSION}.tar.gz; \
-    echo "${OSTICKET_SLACK_SHA256SUM}  osTicket-slack-plugin.tar.gz" | sha256sum -c; \
-    tar -xzf osTicket-slack-plugin.tar.gz -C /var/www/html/include/plugins --strip-components 1 \
-        osTicket-slack-plugin-${OSTICKET_SLACK_VERSION}/slack; \
-    rm osTicket-slack-plugin.tar.gz
-COPY root /
+    php make.php hydrate;
+RUN cd osTicket-plugins; \
+    find * -maxdepth 0 -type d ! -path doc ! -path lib -exec mv '{}' /var/www/html/include/plugins \;
+RUN rm -r osTicket-plugins
+RUN mkdir /temp-build
+COPY root /temp-build
+RUN cd /temp-build && find . -type f -print0 | xargs -0 dos2unix && \cp -r /temp-build/* / && rm -rf /temp-build
 CMD ["start"]
 STOPSIGNAL SIGTERM
 EXPOSE 80

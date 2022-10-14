@@ -1,19 +1,45 @@
-version: '3'
+version: '3.7'
 services:
-  mysql:
-    image: mysql:5.7
-    environment:
-      MYSQL_ROOT_PASSWORD: secret
-      MYSQL_DATABASE: osticket
-      MYSQL_USER: osticket
-      MYSQL_PASSWORD: secret
-  osticket:
-    image: devinsolutions/osticket:latest
-    environment:
-      MYSQL_HOST: mysql
-      MYSQL_DATABASE: osticket
-      MYSQL_USER: osticket
-      MYSQL_PASSWORD: secret
+  osticket-app:
+    image: jerkytest/osticket:1.17
     ports:
-      - 8080:80
-    restart: on-failure
+      - "84:80"
+    volumes:
+      - "/etc/timezone:/etc/timezone:ro" 
+      - "/etc/localtime:/etc/localtime:ro"
+    environment:
+      - CRON_INTERVAL=5
+      - MYSQL_HOST=osticket-db
+      - MYSQL_DATABASE=osticket
+      - MYSQL_USER=osticket
+      - MYSQL_PASSWORD=password
+      - SMTP_HOST=pdq.ifebp.org
+      - SMTP_PORT=25
+      - SMTP_FROM=osticket@ifebp.org
+      - SMTP_TLS=0
+      - SMTP_USER=osticket@example.com
+      - SMTP_PASSWORD=password
+      - INSTALL_SECRET=somerandomlargecharacterstring
+      - INSTALL_EMAIL=osticket@example.com
+      - INSTALL_NAME=OSTicket Helpdesk
+      - INSTALL_URL=http://localhost:84/
+      - ADMIN_FIRSTNAME=Admin
+      - ADMIN_LASTNAME=User
+      - ADMIN_EMAIL=admin@example.com
+      - ADMIN_USERNAME=ostadmin
+      - ADMIN_PASSWORD=Password123
+    restart: always
+
+  osticket-db:
+    image: mariadb:latest
+    ports:
+      - "5558:3306"
+    volumes:
+      - ./db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=securepassword
+      - MYSQL_DATABASE=osticket
+      - MYSQL_USER=osticket
+      - MYSQL_PASSWORD=password
+      - TIMEZONE='America/Chicago'
+    restart: always

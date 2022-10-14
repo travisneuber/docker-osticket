@@ -2,6 +2,7 @@ name: CI
 
 on:
   push:
+    branches: ['master']
 
 env:
   IMAGE_NAME: jerkytest/osticket

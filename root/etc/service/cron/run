@@ -1,3 +1,0 @@
-#!/bin/sh
-
-exec crond -fL /var/log/cron.log
